@@ -239,8 +239,9 @@ function getBrandConfigs(options: Options): Dictionary<any> {
 
       Object.entries(configData.brands).forEach(([brandName, brandConfig]) => {
         if (!brandName.startsWith("!")) {
-          brandConfigs[brandName] = brandConfig
-          setBrandConfigData(brandName, brandConfig as Dictionary<any>);
+          let clonedBrandConfig: Dictionary<any> = structuredClone(brandConfig);
+          brandConfigs[brandName] = clonedBrandConfig
+          setBrandConfigData(brandName, clonedBrandConfig);
         }
       });
 
@@ -261,11 +262,12 @@ function getBrandConfigs(options: Options): Dictionary<any> {
 
             const subBrands = configData.brands["!repeat_brands"]["brands"];
 
-            Object.entries(subBrands).forEach(([brandNameKey, brandConfig]) => {
+            Object.entries(subBrands).forEach(([brandNameKey, brandConfig]: [string, any]) => {
               let brandName = replaceVariables(brandNameKey, variables);
-              brandConfigs[brandName] = brandConfig
+              let clonedBrandConfig: Dictionary<any> = structuredClone(brandConfig);
+              brandConfigs[brandName] = clonedBrandConfig
               brandConfigs[brandName]["!variables"] = variables;
-              setBrandConfigData(brandName, brandConfig as Dictionary<any>);
+              setBrandConfigData(brandName, clonedBrandConfig);
             })
           })
 
