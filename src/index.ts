@@ -28,6 +28,8 @@ export interface Options {
   target: string
   brand: string
   logLevel?: LogLevel
+  /** Match channel_config_sections against configs/ subfolders case-insensitively (default false). */
+  caseInsensitiveConfigSections?: boolean
 }
 
 export interface FinalConfig {
@@ -676,10 +678,20 @@ function parseConfig(brand: string, options: Options): Dictionary<any> {
       config[region] = regionConfigData;
 
       const configSections = configData["channel_config_sections"] ?? [];
-      const configMatches = glob.sync(path.join(regionPath, "configs/{" + configSections.join(",") + "}/**/*"), { nodir: true })
+      const configMatches = glob.sync(
+        path.join(regionPath, "configs/{" + configSections.join(",") + "}/**/*"),
+        { nodir: true, nocase: options.caseInsensitiveConfigSections === true }
+      )
       configMatches.forEach((regionConfigPath) => {
         const basePath = path.relative(path.join(regionPath, "configs"), regionConfigPath)
-        const basePathParts = path.dirname(basePath);
+        // nocase match casing varies by platform - normalize to the declared section name
+        let basePathParts = path.dirname(basePath);
+        if (options.caseInsensitiveConfigSections === true) {
+          const matchedSection = configSections.find((section: string) => section.toLowerCase() === basePathParts.toLowerCase());
+          if (matchedSection) {
+            basePathParts = matchedSection;
+          }
+        }
 
         if (!config[region]["components"]) {
           config[region]["components"] = {
