@@ -1,6 +1,6 @@
 {
   "name": "roku-builder",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "glob": "^11.0.0",
+    "glob": "^13.0.0",
     "gm": "^1.25.0",
     "json5": "^2.2.3",
     "mergician": "^2.0.2",
